@@ -128,7 +128,7 @@ def generate_paths(x0, kappa, theta, sigma, T, M, I):
         simulated paths
     '''
     dt = float(T) / M
-    x = np.zeros((M + 1, I), dtype=np.float)
+    x = np.zeros((M + 1, I), dtype=float)
     x[0, :] = x0
     # matrix filled with standard normal distributed rv
     ran = np.random.standard_normal((M + 1, I))

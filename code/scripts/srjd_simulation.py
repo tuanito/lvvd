@@ -102,8 +102,8 @@ def srjd_simulation(x0, kappa, theta, sigma,
     dt = float(T) / M  # time interval
     shift = scint.splev(np.arange(M + 1) * dt, tck, der=0)
       # deterministic shift values
-    xh = np.zeros((M + 1, I), dtype=np.float)
-    x = np.zeros((M + 1, I), dtype=np.float)
+    xh = np.zeros((M + 1, I), dtype=float)
+    x = np.zeros((M + 1, I), dtype=float)
     xh[0, :] = x0
     x[0, :] = x0
     # drift contribution of jump p.a.

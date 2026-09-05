@@ -188,6 +188,6 @@ def plot_calibration_results(option_data, opt, mats):
             axarr[z, 1].set_xlabel('strike')
 
 if __name__ == '__main__':
-    option_data = read_select_quotes('../data/', tol=0.1)
+    option_data = read_select_quotes('data/', tol=0.1)
     option_data['VALUE'] = 0.0
     opt = srjd_model_calibration()
