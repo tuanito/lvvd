@@ -1,0 +1,24 @@
+# Cboe instruments collected by scripts/collect_cboe_data.py
+#
+# indices   daily OHLC history from
+#           cdn.cboe.com/api/global/us_indices/daily_prices/<name>_History.csv
+# futures   per-contract price/volume files listed by
+#           www-api.cboe.com/us/futures/market_statistics/historical_data/product/list/<root>/
+#           and stored under .../historical_data/<root>/<root>_<expiry>.csv
+# chains    daily snapshot of the full (delayed) option chain from
+#           cdn.cboe.com/api/global/delayed_quotes/options/<symbol>.json
+#
+# Verified against cboe.com on 2026-09-09.
+
+store: data/cboe_market_data.h5
+time_sleep: 0.5          # seconds between CDN requests
+
+indices:                  # symbol -> index history file name
+  VIX: VIX_History.csv
+  VVIX: VVIX_History.csv
+
+futures:                  # futures roots to mirror
+  - VX                   # VIX futures (2013 -> present)
+
+chains:                   # option chains to snapshot daily
+  - _VIX                 # VIX index options (Cboe symbol prefix)

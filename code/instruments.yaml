@@ -1,0 +1,55 @@
+# Eurex instruments collected by scripts/collect_option_data_api.py
+#
+# id     Eurex product id for /api/v1/overallstatistics/<id>
+# code   product ticker used as the storage key (FESX, OESX, ...)
+# type   F = futures: quotes per contract come from one
+#                 'filtertype=overview' call per trading day
+#        O = options: per-strike calls/puts come from
+#                 'filtertype=detail' calls per (expiry, day);
+#                 available expiries are discovered from the overview call
+# enabled set false to skip an instrument without deleting it
+#
+# Product ids verified against eurex.com product pages on 2026-09-09.
+
+store: data/index_option_series_live.h5
+lookback_days: 28        # API serves roughly the last 21 trading days
+time_sleep: 0.5          # seconds between API calls
+
+instruments:
+  # --- EURO STOXX 50 & STOXX futures ---
+  - { id: 34652, code: FESX, type: F, enabled: true,
+      name: EURO STOXX 50 Index Futures }
+  - { id: 41978, code: FXXP, type: F, enabled: true,
+      name: STOXX Europe 600 Index Futures }
+
+  # --- volatility ---
+  - { id: 34702, code: FVS,  type: F, enabled: true,
+      name: VSTOXX Futures }
+  - { id: 48982, code: EVAR, type: F, enabled: true,
+      name: EURO STOXX 50 Variance Futures }
+
+  # --- equity index dividends ---
+  - { id: 54036, code: FEXD, type: F, enabled: true,
+      name: EURO STOXX 50 Index Dividend Futures }
+  - { id: 69870, code: OEXD, type: O, enabled: true,
+      name: EURO STOXX 50 Index Dividend Options }
+
+  # --- credit index futures (Bloomberg credit/bond index family) ---
+  - { id: 3281332, code: FEHY, type: F, enabled: true,
+      name: Bloomberg Liquidity Screened Euro High Yield Bond Index Futures }
+  - { id: 2787524, code: FMCE, type: F, enabled: true,
+      name: Bloomberg MSCI Euro Corporate Screened Index Futures }
+  - { id: 2787528, code: FMGG, type: F, enabled: true,
+      name: Bloomberg MSCI Global Green Bond Index Futures }
+  - { id: 3843240, code: FEMS, type: F, enabled: true,
+      name: Bloomberg Emerging Market USD Sovereign Index Futures }
+  - { id: 3843256, code: FBLC, type: F, enabled: true,
+      name: Bloomberg Sterling Liquid Corporate Bond Index Futures }
+  - { id: 4118058, code: FUSC, type: F, enabled: true,
+      name: Bloomberg US Corporate Index Futures }
+  - { id: 4118064, code: FUHY, type: F, enabled: true,
+      name: Bloomberg US High Yield Very Liquid Index Futures }
+
+  # --- EURO STOXX 50 index options (drives the VSTOXX sub-index math) ---
+  - { id: 69660, code: OESX, type: O, enabled: true,
+      name: EURO STOXX 50 Index Options }

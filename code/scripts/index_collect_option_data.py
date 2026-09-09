@@ -19,6 +19,15 @@ from index_date_functions import *
 #
 # The URL template
 #
+# NOTE (2026-09-09): the URL below is the LEGACY statistics page this
+# module was originally written against. Eurex no longer serves the
+# option table there (the deep-link parameters return an empty page
+# shell), so the scraper is broken. The data now lives at the JSON API
+# shown here -- see 05_vstoxx_index.ipynb for a working replacement:
+#
+# NEW (current): 'https://www.eurex.com/api/v1/overallstatistics/69660'
+#                '?filtertype=detail&productdate=YYYYMMDD&busdate=YYYYMMDD&contracttype=M'
+#
 URL = 'https://www.eurex.com/ex-en/data/statistics/market-statistics-online/'
 URL += '100!onlineStats?productGroupId=13370&productId=69660&viewType=3&'
 URL += 'cp=%s&month=%s&year=%s&busDate=%s'
