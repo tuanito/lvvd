@@ -66,7 +66,6 @@ def srjd_error_function(p0):
     '''
     global i, min_MSE, option_data
     OD = len(option_data)
-    diffs = srjd_valuation_function(p0)
     kappa, theta, sigma, lamb, mu, delta = p0
 
     # penalties
@@ -75,6 +74,14 @@ def srjd_error_function(p0):
         pen = 1000.0
     if kappa < 0 or theta < 0 or sigma < 0 or lamb < 0 or delta < 0:
         pen = 1000.0
+    if pen > 0.0:
+        # invalid parameters: valuation (eg. Poisson with lam < 0)
+        # would raise, so return the penalty right away
+        MSE = pen
+        min_MSE = min(min_MSE, MSE)
+        i += 1
+        return MSE
+    diffs = srjd_valuation_function(p0)
 
     MSE = np.sum(diffs ** 2) / OD + pen  # mean squared error
 

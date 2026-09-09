@@ -15,7 +15,7 @@ import pandas as pd
 import datetime as dt
 import scipy.optimize as spo
 from pylab import mpl, plt
-plt.style.use('seaborn')
+plt.style.use('seaborn-v0_8')
 mpl.rcParams['font.family'] = 'serif'
 
 # importing the data

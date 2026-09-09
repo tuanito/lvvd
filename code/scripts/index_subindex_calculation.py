@@ -37,20 +37,16 @@ def compute_subindex(data, delta_T, R):
     # converts the strike price which serves as index so far
     # to a regular data column
     data = data.reset_index()
-    data['delta_K'] = None
-    # differences between the different strikes of the series
-    data['delta_K'].iloc[1:-1] = [(data['Strike price'].iloc[i + 1]
-            - data['Strike price'].iloc[i - 1]) / 2 for i in data.index[1:-1]]
-            # where possible, for the i-th entry it is
-            # half of the difference between the (i-1)-th
-            # and (i+1)-th price
-    #  for i=0 it is just the difference to the next strike
-    data['delta_K'].iloc[0] = data['Strike price'].iloc[1] - data['Strike price'].iloc[0]
-
-    data['delta_K'].loc[data.index[-1:]] = float(data['Strike price'].iloc[-1:]) \
-            - float(data['Strike price'].iloc[-2:-1])
-            # for the last entry, it is just the difference
+    # differences between the different strikes of the series,
+    # assigned as a whole column (chained .iloc writes fail
+    # under pandas copy-on-write)
+    strikes = data['Strike price']
+    data['delta_K'] = ([strikes.iloc[1] - strikes.iloc[0]]  # first: diff to next strike
+            + [(strikes.iloc[i + 1] - strikes.iloc[i - 1]) / 2
+               for i in range(1, len(data) - 1)]
+            # for the last entry it is just the difference
             # between the second but last strike and the last strike price
+            + [strikes.iloc[-1] - strikes.iloc[-2]])
 
     # find the smallest difference between put and call price
     min_index = data.Diff_Put_Call.argmin()
@@ -64,13 +60,12 @@ def compute_subindex(data, delta_T, R):
     # the index of the ATM strike
     K_0_index = data.index[data['Strike price'] == K_0][0]
 
-    # selects the OTM options
-    data['M'] = pd.concat((data.Put_Price[0:K_0_index],
-                           data.Call_Price[K_0_index:]))
-
-    # ATM we take the average of put and call price
-    data['M'].iloc[K_0_index] = (data['Call_Price'][K_0_index]
-                            + data['Put_Price'][K_0_index]) / 2
+    # selects the OTM options: puts below K_0, calls at and above K_0,
+    # with the average of put and call price at the ATM strike
+    data['M'] = (list(data['Put_Price'].iloc[:K_0_index])
+            + [(data['Call_Price'].iloc[K_0_index]
+                + data['Put_Price'].iloc[K_0_index]) / 2]
+            + list(data['Call_Price'].iloc[K_0_index + 1:]))
 
     # the single OTM values
     data['MFactor'] = (R * (data['delta_K'] * data['M'])
