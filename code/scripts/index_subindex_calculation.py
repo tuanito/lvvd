@@ -79,7 +79,7 @@ def compute_subindex(data, delta_T, R):
     return subVSTOXX
 
 
-def make_subindex(path):
+def make_subindex(path, filename='index_option_series.h5', key_prefix=''):
     ''' Depending on the content of the file 'index_option_series.h5',
     the function computes the sub-indexes V6I1, V6I2 and parts
     of V6I3 and returns a pandas DataFrame object with the results.
@@ -88,6 +88,12 @@ def make_subindex(path):
     ==========
     path: string
         string with path of data file
+    filename: string
+        name of the HDF5 file with the option series; defaults to the
+        book's static 2020 dataset ('index_option_series.h5')
+    key_prefix: string
+        prefix prepended to the '<MmmYY>' expiry keys; the live store
+        nests OESX series under '/options/OESX/'
 
     Returns
     =======
@@ -96,7 +102,8 @@ def make_subindex(path):
     '''
 
     # the data source, created with index_collect_option_data.py
-    datastore = pd.HDFStore(path + 'index_option_series.h5', 'r')
+    # (static) or collect_option_data_api.py (live)
+    datastore = pd.HDFStore(path + filename, 'r')
     
     max_date = dt.datetime.today()  # find the latest date in the source
     for series in datastore.keys():
@@ -130,7 +137,7 @@ def make_subindex(path):
         delta_T = idf.compute_delta(day, settlement_date)
         try:
             # data of the option series for that date
-            data = datastore[key].loc[day]
+            data = datastore[key_prefix + key].loc[day]
         except:
             continue
 
@@ -150,7 +157,7 @@ def make_subindex(path):
         # the same for the next index
         key_2 = settlement_date_2.strftime('%b%y')
         delta_T_2 = idf.compute_delta(day, settlement_date_2)
-        data_2 = datastore[key_2].loc[day]
+        data_2 = datastore[key_prefix + key_2].loc[day]
 
         if is_V1_defined:
             V2[day] = compute_subindex(data_2, delta_T_2,
